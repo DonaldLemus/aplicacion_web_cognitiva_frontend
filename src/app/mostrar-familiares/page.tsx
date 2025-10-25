@@ -67,7 +67,7 @@ export default function MostrarFamiliaresPage() {
         [familiar.id]: true
       }));
     } else {
-      alert(Incorrecto. Intenta de nuevo.);
+      alert("Incorrecto. Intenta de nuevo.");
     }
   };
 
