@@ -57,7 +57,6 @@ export default function MostrarFamiliaresPage() {
       return;
     }
 
-    // Comparación case-insensitive y sin tildes para mayor flexibilidad
     const normalizar = (str: string) => 
       str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
@@ -104,12 +103,12 @@ export default function MostrarFamiliaresPage() {
         ) : (
           familiares.map((familiar) => {
             const revelado = revelados[familiar.id];
+            const cardClasses = revelado 
+              ? ${styles.card} ${styles.cardRevealed} 
+              : styles.card;
             
             return (
-              <div 
-                key={familiar.id} 
-                className={${styles.card} ${revelado ? styles.cardRevealed : ""}}
-              >
+              <div key={familiar.id} className={cardClasses}>
                 <div className={styles.imageContainer}>
                   <Image 
                     src={familiar.fotoUrl} 
