@@ -106,7 +106,10 @@ export default function MostrarFamiliaresPage() {
             const revelado = revelados[familiar.id];
             
             return (
-              <div key={familiar.id} className={${styles.card} ${revelado ? styles.cardRevealed : ""}}>
+              <div 
+                key={familiar.id} 
+                className={${styles.card} ${revelado ? styles.cardRevealed : ""}}
+              >
                 <div className={styles.imageContainer}>
                   <Image 
                     src={familiar.fotoUrl} 
