@@ -18,7 +18,9 @@ const PARENTESCOS = [
   "Abuelo",
   "Abuela",
   "Nieto",
-  "Nieta"
+  "Nieta",
+  "Hijo",
+  "Hija"
 ];
 
 export default function MostrarFamiliaresPage() {
