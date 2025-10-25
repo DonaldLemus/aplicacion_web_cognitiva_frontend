@@ -1,0 +1,87 @@
+.container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 24px;
+  background-color: #fdfdfd;
+  border-radius: 16px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  font-family: "Segoe UI", sans-serif;
+}
+
+.title {
+  font-size: 1.6rem;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: bold;
+  color: #333;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.input,
+.select,
+.fileInput {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border 0.3s;
+}
+
+.input:focus,
+.select:focus,
+.fileInput:focus {
+  border-color: #5c8ef1;
+  outline: none;
+}
+
+.fileInput {
+  padding: 8px;
+  background-color: #fff;
+}
+
+.button {
+  width: 100%;
+  background-color: #5c8ef1;
+  color: white;
+  font-weight: bold;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: 0.3s;
+}
+
+.button:hover {
+  background-color: #4a77d4;
+}
+
+.successMessage,
+.errorMessage {
+  text-align: center;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 20px;
+  font-weight: 500;
+}
+
+.successMessage {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.errorMessage {
+  background-color: #f8d7da;
+  color: #721c24;
+}

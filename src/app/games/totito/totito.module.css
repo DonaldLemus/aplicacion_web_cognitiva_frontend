@@ -1,0 +1,69 @@
+.tictactoepage {
+    background-image: url('https://cdn.pixabay.com/photo/2015/12/01/15/43/black-1072366_1280.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+  }
+  
+  .scoreboard {
+    color: white;
+    margin-bottom: 20px;
+    font-size: 1.5rem; 
+  }
+  
+  .board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-gap: 10px; 
+  }
+  
+  .square {
+    width: 100px;
+    height: 100px;
+    font-size: 2rem; 
+    background-color: rgba(255, 255, 255, 0.9); 
+    border: 2px solid #4CAF50; 
+    cursor: pointer; 
+    transition: background-color 0.3s, transform 0.3s; 
+  }
+  
+  .square:hover {
+    background-color: #e0f7fa; 
+    transform: scale(1.05); 
+  }
+  
+  .winnermessage {
+    color: white;
+    margin-top: 20px;
+    font-size: 1.5rem; 
+    text-align: center; 
+  }
+  
+  .winnermessage button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #4CAF50; 
+    color: white;
+    border: none; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    transition: background-color 0.3s;
+  }
+  
+  .winnermessage button:hover {
+    background-color: #388e3c; 
+  }
+  
+  .difficultySelect {
+  background-color: #333;
+  color: white;
+  border: 1px solid #ccc;
+  padding: 5px;
+  border-radius: 4px;
+}

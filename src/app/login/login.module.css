@@ -1,0 +1,70 @@
+
+.container {
+    background-image: url('https://cdn.pixabay.com/photo/2019/11/24/08/56/game-4648923_1280.jpg');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .loginBox {
+    background: rgba(255, 255, 255, 0.8); 
+    padding: 20px;
+    border-radius: 10px; 
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); 
+
+    color: black;
+  }
+  
+  .inputGroup {
+    margin-bottom: 15px;
+  }
+  
+  .inputGroup label {
+    display: block;
+    color: black;
+    margin-bottom: 5px;
+  }
+  
+  .inputGroup input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px; 
+  }
+  
+  .loginButton {
+    background-color: #4caf50; 
+    color: white; 
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    cursor: pointer; 
+    transition: background-color 0.3s; 
+  }
+  
+  .loginButton:hover {
+    background-color: #45a049; 
+  }
+  
+  .registerPrompt {
+    margin-top: 10px;
+    text-align: center; 
+  }
+  
+  .registerButton {
+    background-color: #008cba; 
+    color: white; 
+    border: none;
+    border-radius: 5px; 
+    padding: 5px 10px;
+    cursor: pointer; 
+    transition: background-color 0.3s; 
+  }
+  
+  .registerButton:hover {
+    background-color: #007bb5; 
+  }
+  
