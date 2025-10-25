@@ -103,9 +103,9 @@ export default function MostrarFamiliaresPage() {
         ) : (
           familiares.map((familiar) => {
             const revelado = revelados[familiar.id];
-            const cardClasses = revelado 
-              ? ${styles.card} ${styles.cardRevealed} 
-              : styles.card;
+           const cardClasses = revelado
+                            ? styles.card + " " + styles.cardRevealed
+                            : styles.card;
             
             return (
               <div key={familiar.id} className={cardClasses}>
