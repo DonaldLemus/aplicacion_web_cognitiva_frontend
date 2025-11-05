@@ -2,9 +2,13 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image"; // ← Importa Image
+import Image from "next/image";
 import style from "./dashboard.module.css";
-import { descargarReporteEstadoAnimo, enviarReporte } from "@/lib/api";
+import {
+  descargarReporteEstadoAnimo,
+  enviarReporte,
+  subirFotoPerfil,
+} from "@/lib/api";
 
 type Actividad = {
   id: number;
@@ -29,8 +33,6 @@ type Clima = {
   ciudad?: string;
 };
 
-
-
 export default function DashboardPage() {
   const router = useRouter();
   const [actividades, setActividades] = useState<Actividad[]>([]);
@@ -48,7 +50,7 @@ export default function DashboardPage() {
     }
 
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/listarActividades`, {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
         if (!res.ok) throw new Error("Error al cargar actividades");
@@ -71,7 +73,9 @@ export default function DashboardPage() {
   }, [router]);
 
   const userString =
-    typeof window !== "undefined" ? localStorage.getItem("cognitiva_user") : null;
+    typeof window !== "undefined"
+      ? localStorage.getItem("cognitiva_user")
+      : null;
   const user = userString ? JSON.parse(userString) : null;
 
   const handleLogout = async () => {
@@ -79,10 +83,13 @@ export default function DashboardPage() {
     const sesionId = localStorage.getItem("cognitiva_session");
     try {
       if (sesionId) {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/${sesionId}/endSession`, {
-          method: "PUT",
-          headers: { Authorization: `Bearer ${token ?? ""}` }
-        });
+        await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/${sesionId}/endSession`,
+          {
+            method: "PUT",
+            headers: { Authorization: `Bearer ${token ?? ""}` },
+          }
+        );
       }
     } catch (e) {
       console.error(e);
@@ -98,7 +105,6 @@ export default function DashboardPage() {
     try {
       const blob = await descargarReporteEstadoAnimo();
       const url = window.URL.createObjectURL(blob);
-
       setPdfUrl(url);
       setShowPDF(true);
 
@@ -131,7 +137,11 @@ export default function DashboardPage() {
 
   return (
     <div className={style.dashboardpage}>
-      <TopBar nombre={user?.nombre ?? "Usuario"} onLogout={handleLogout} />
+      <TopBar
+        nombre={user?.nombre ?? "Usuario"}
+        fotoPerfilUrl={user?.fotoPerfilUrl}
+        onLogout={handleLogout}
+      />
 
       <div className={style.dashboardmenu}>
         <p>Selecciona un juego para comenzar:</p>
@@ -139,13 +149,22 @@ export default function DashboardPage() {
           <button className={style.reportButton} onClick={handleDescargar}>
             📥 Descargar reporte
           </button>
-          <button className={style.reportButtonSecondary} onClick={handleEnviar}>
+          <button
+            className={style.reportButtonSecondary}
+            onClick={handleEnviar}
+          >
             📧 Enviar reporte
           </button>
-          <button className={style.reportButton} onClick={() => router.push('/registrar-familia')}>
+          <button
+            className={style.reportButton}
+            onClick={() => router.push("/registrar-familia")}
+          >
             😊 Registrar familiar
           </button>
-          <button className={style.reportButton} onClick={() => router.push('/mostrar-familiares')}>
+          <button
+            className={style.reportButton}
+            onClick={() => router.push("/mostrar-familiares")}
+          >
             😊 Ver familiares
           </button>
         </div>
@@ -155,7 +174,9 @@ export default function DashboardPage() {
             <button
               key={act.id}
               className={style.gameButton}
-              onClick={() => router.push(`/${act.ruta}?idActividad=${act.id}`)}
+              onClick={() =>
+                router.push(`/${act.ruta}?idActividad=${act.id}`)
+              }
             >
               {act.nombre}
             </button>
@@ -166,12 +187,13 @@ export default function DashboardPage() {
       {showPDF && pdfUrl && (
         <div className={style.modalOverlay}>
           <div className={style.modalContent}>
-            <button className={style.closeButton} onClick={() => setShowPDF(false)}>✖</button>
-            <iframe
-              src={pdfUrl}
-              className={style.pdfViewer}
-              title="Visor PDF"
-            />
+            <button
+              className={style.closeButton}
+              onClick={() => setShowPDF(false)}
+            >
+              ✖
+            </button>
+            <iframe src={pdfUrl} className={style.pdfViewer} title="Visor PDF" />
           </div>
         </div>
       )}
@@ -179,19 +201,95 @@ export default function DashboardPage() {
   );
 }
 
-function TopBar({ nombre, onLogout }: { nombre: string; onLogout: () => void }) {
+function TopBar({
+  nombre,
+  fotoPerfilUrl,
+  onLogout,
+}: {
+  nombre: string;
+  fotoPerfilUrl?: string | null;
+  onLogout: () => void;
+}) {
   const router = useRouter();
+  const defaultAvatar =
+    "https://res.cloudinary.com/daa36huug/image/upload/v1762242199/cognitiva/personas/11/en4gxcehq6pypzhfeicu.webp";
+
+  // estado reactivo para la foto
+  const [fotoUrl, setFotoUrl] = useState(fotoPerfilUrl || defaultAvatar);
+
+  const handleSubirFoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const confirm = window.confirm("¿Deseas cambiar tu foto de perfil?");
+    if (!confirm) return;
+
+    try {
+      const nuevaUrl = await subirFotoPerfil(file);
+      alert("Foto de perfil actualizada correctamente");
+
+      // actualizar localStorage
+      const userStr = localStorage.getItem("cognitiva_user");
+      const user = userStr ? JSON.parse(userStr) : null;
+      if (user) {
+        user.fotoPerfilUrl = nuevaUrl;
+        localStorage.setItem("cognitiva_user", JSON.stringify(user));
+      }
+      setFotoUrl(nuevaUrl);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message || "Error al subir la foto.");
+    }
+  };
+
   return (
     <header className={style.topbar}>
       <div className={style.topbarLeft}>
-        <h2 className={style.welcome}>Bienvenido, {nombre}</h2>
+        <div className={style.profileSection}>
+          <div
+            className={style.avatarContainer}
+            onClick={() => document.getElementById("fotoInput")?.click()}
+            title="Haz clic para cambiar tu foto de perfil"
+          >
+            <Image
+              src={fotoUrl || defaultAvatar}
+              alt={nombre}
+              width={50}
+              height={50}
+              className={style.avatar}
+              unoptimized={!fotoPerfilUrl}
+            />
+            <input
+              id="fotoInput"
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handleSubirFoto}
+            />
+          </div>
+          <h2 className={style.welcome}>Bienvenido, {nombre}</h2>
+          <button
+            className={style.addEmailButton}
+            onClick={() => router.push("/registrar-datos-generales")}
+          >
+            Registrar Datos Médicos
+          </button>
+        </div>
       </div>
       <div className={style.topbarRight}>
         <ClockWidget />
         <WeatherWidget />
         <NotificationsBell />
-        <button className={style.logoutButton} onClick={onLogout}>Cerrar sesión</button>
-        <button className={style.addEmailButton} onClick={() => router.push('/registrar-correos')}>Agregar Correo</button>
+        <button className={style.logoutButton} onClick={onLogout}>
+          Cerrar sesión
+        </button>
+        <button
+          className={style.addEmailButton}
+          onClick={() => router.push("/registrar-correos")}
+        >
+          Agregar Correo
+        </button>
       </div>
     </header>
   );
@@ -203,7 +301,11 @@ function ClockWidget() {
     const t = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(t);
   }, []);
-  return <div className={style.clock}>{now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>;
+  return (
+    <div className={style.clock}>
+      {now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+    </div>
+  );
 }
 
 function WeatherWidget() {
@@ -228,12 +330,12 @@ function WeatherWidget() {
         const clima: Clima = {
           tempC: weather.temperature,
           icon: obtenerIconoPorCodigo(weather.weathercode),
-          ciudad: 'Guatemala',
+          ciudad: "Guatemala",
         };
 
         if (mounted) setClima(clima);
       } catch (e) {
-        console.error('Error al obtener el clima', e);
+        console.error("Error al obtener el clima", e);
       }
     };
 
@@ -249,9 +351,9 @@ function WeatherWidget() {
       {clima ? (
         <span className={style.weatherRow}>
           {clima.icon && (
-            <Image 
-              src={clima.icon} 
-              alt="Icono del clima" 
+            <Image
+              src={clima.icon}
+              alt="Icono del clima"
               className={style.weatherIcon}
               width={32}
               height={32}
@@ -268,14 +370,18 @@ function WeatherWidget() {
 }
 
 function obtenerIconoPorCodigo(codigo: number): string {
-  if ([0].includes(codigo)) return 'https://openweathermap.org/img/wn/01d.png';
-  if ([1, 2, 3].includes(codigo)) return 'https://openweathermap.org/img/wn/02d.png';
-  if ([45, 48].includes(codigo)) return 'https://openweathermap.org/img/wn/50d.png';
-  if ([51, 53, 55, 56, 57].includes(codigo)) return 'https://openweathermap.org/img/wn/09d.png';
-  if ([61, 63, 65, 66, 67].includes(codigo)) return 'https://openweathermap.org/img/wn/10d.png';
-  if ([71, 73, 75, 77].includes(codigo)) return 'https://openweathermap.org/img/wn/13d.png';
-  if ([80, 81, 82].includes(codigo)) return 'https://openweathermap.org/img/wn/11d.png';
-  return 'https://openweathermap.org/img/wn/03d.png';
+  if ([0].includes(codigo)) return "https://openweathermap.org/img/wn/01d.png";
+  if ([1, 2, 3].includes(codigo)) return "https://openweathermap.org/img/wn/02d.png";
+  if ([45, 48].includes(codigo)) return "https://openweathermap.org/img/wn/50d.png";
+  if ([51, 53, 55, 56, 57].includes(codigo))
+    return "https://openweathermap.org/img/wn/09d.png";
+  if ([61, 63, 65, 66, 67].includes(codigo))
+    return "https://openweathermap.org/img/wn/10d.png";
+  if ([71, 73, 75, 77].includes(codigo))
+    return "https://openweathermap.org/img/wn/13d.png";
+  if ([80, 81, 82].includes(codigo))
+    return "https://openweathermap.org/img/wn/11d.png";
+  return "https://openweathermap.org/img/wn/03d.png";
 }
 
 function NotificationsBell() {
@@ -283,7 +389,9 @@ function NotificationsBell() {
   const [items, setItems] = useState<Notificacion[]>([]);
 
   useEffect(() => {
-    const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/consejos-sse`);
+    const eventSource = new EventSource(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/consejos-sse`
+    );
 
     eventSource.addEventListener("nuevo-consejo", (event: MessageEvent) => {
       const data = JSON.parse(event.data);
@@ -292,7 +400,7 @@ function NotificationsBell() {
         titulo: data.titulo,
         mensaje: data.descripcion,
         fecha: new Date().toISOString(),
-        leida: false
+        leida: false,
       };
       setItems((prev) => [nuevaNotificacion, ...prev]);
     });
@@ -339,7 +447,9 @@ function NotificationsBell() {
                 <li key={n.id} className={style.item}>
                   <div className={style.itemTitle}>{n.titulo}</div>
                   <div className={style.itemMsg}>{n.mensaje}</div>
-                  <div className={style.itemMeta}>{new Date(n.fecha).toLocaleString()}</div>
+                  <div className={style.itemMeta}>
+                    {new Date(n.fecha).toLocaleString()}
+                  </div>
                 </li>
               ))}
             </ul>
